@@ -1,0 +1,32 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Datos y modelos pesados (se regeneran con scripts/ y notebooks/)
+data/raw/
+data/processed/*.csv
+!data/processed/pipeline_summary.csv
+models/artifacts/*.joblib
+models/bert_phishing/*.safetensors
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+
+# Node
+node_modules/
+dist/
+coverage/
+package-lock.json
+yarn.lock
+
+# Claude local
+.claude/settings.local.json
+
+
+# Cartas personales, no son parte del proyecto
+web/

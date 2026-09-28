@@ -1,0 +1,39 @@
+Qué onda. Entiendo perfecto a qué te refieres: quieres pasar de la clasificación binaria aburrida (*"¿este mensaje es phishing?"*) a un análisis de **comportamiento secuencial**. El phishing moderno, especialmente el que usa ingeniería social dirigida (spear phishing), no se detecta en un solo mensaje, sino en la "temperatura" y la intención que escala en el hilo.
+
+Para lograr esa "memoria" o contexto conversacional con modelos tipo BERT (que por naturaleza son de contexto estático), tienes varias rutas arquitectónicas interesantes:
+
+---
+
+## 1. Arquitectura Jerárquica (Hierarchical Transformers)
+Esta es la opción más sólida para investigación. En lugar de meter todo el texto de golpe, procesas el hilo en dos niveles:
+* **Nivel de Mensaje:** Usas un BERT (o RoBERTa) como *encoder* para obtener un embedding de cada mensaje individual.
+* **Nivel de Contexto:** Pasas la secuencia de esos embeddings a través de una **GRU o un Transformer ligero** (Temporal Transformer). 
+* **Por qué sirve:** El segundo nivel aprende la relación temporal. Detecta si el atacante está pasando de "saludo inocente" a "solicitud de urgencia" o "pedido de credenciales".
+
+## 2. Long-Context Transformers con Separadores Especiales
+Si quieres mantenerlo "simple" pero efectivo, puedes concatenar el hilo usando tokens especiales de separación:
+`[CLS] Mensaje 1 [SEP] Mensaje 2 [SEP] Mensaje 3 [SEP]`
+* **El truco:** No uses solo el token `[CLS]` para la clasificación. Usa **Global Attention** (como en **Longformer** o **BigBird**) sobre los tokens `[SEP]` para que el modelo pondere qué partes de la historia previa son "sospechosas" en relación con el último mensaje.
+
+## 3. State-Space Models (SSM) - La alternativa a BERT
+Si buscas "memoria" real y eficiente, te sugiero mirar **Mamba** o arquitecturas basadas en SSM. 
+* A diferencia de BERT, que tiene una ventana de atención cuadrada, los SSM comprimen la historia en un **estado interno (hidden state)** que se actualiza con cada mensaje. 
+* Es mucho más parecido a cómo un humano recuerda una conversación: mantienes un "resumen" mental de lo que ha pasado sin tener que releer todo cada vez.
+
+## 4. RAG de Comportamiento (Memoria Externa)
+Como ya manejas **FastAPI y bases de datos vectoriales**, puedes implementar un sistema de memoria externa:
+1.  Generas el embedding del hilo actual.
+2.  Consultas una DB (Vector DB) con patrones históricos de ataques conocidos o perfiles de comportamiento de ingeniería social.
+3.  Inyectas ese contexto como "conocimiento previo" al prompt del clasificador.
+
+---
+
+### ¿Cómo lo implementaría yo a nivel técnico?
+
+Dado que ya trabajas con arquitecturas pesadas como U-Net y ResNet, esto te va a parecer familiar:
+
+1.  **Preprocessing:** No limpies los stop-words. En phishing, las muletillas y la urgencia gramatical son *features* clave.
+2.  **Modelado:** Usaría un **Sentence-BERT** para extraer vectores de cada interacción.
+3.  **Head de Clasificación:** Pondría una capa de **Atención Multi-Cabeza** al final que reciba los últimos $N$ mensajes. Esto te permite visualizar qué mensaje del pasado fue el "disparador" de la alerta (interpretabilidad).
+
+**¿Te interesa que profundicemos en el código para la capa de agregación temporal o prefieres ver cómo montarlo sobre el stack de GCP que ya usas?**

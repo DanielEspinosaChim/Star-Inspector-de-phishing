@@ -1,0 +1,15 @@
+{
+  "name": "estrella",
+  "private": true,
+  "description": "Detección de phishing en emails con BERT: servicio de inferencia (Flask), gateway (NestJS) y web (React)",
+  "type": "module",
+  "packageManager": "pnpm@11.20.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "bootstrap": "node scripts/setup.mjs",
+    "bootstrap:dev": "node scripts/setup.mjs --dev",
+    "dev": "node scripts/dev.mjs"
+  }
+}
