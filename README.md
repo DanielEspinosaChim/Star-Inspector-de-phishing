@@ -75,6 +75,7 @@ cd frontend && pnpm dev                     # web, puerto 5173
 ```bash
 cd backend/ml-service && python -m pytest   # requiere pnpm bootstrap:dev
 cd backend/gateway && pnpm test && pnpm test:e2e
+cd frontend && pnpm test                      # unitarios del frontend (Vitest)
 ```
 
 ## Documentación del proyecto
