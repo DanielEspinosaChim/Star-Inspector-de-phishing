@@ -1,6 +1,9 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["slow: carga el modelo BERT real (segundos)"]
+markers = [
+  "slow: carga el modelo BERT real (segundos)",
+  "caso(id): ID del caso en el plan de pruebas",
+]
 
 [tool.ruff]
 line-length = 100

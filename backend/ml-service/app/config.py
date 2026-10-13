@@ -9,14 +9,18 @@ SERVICE_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_MODEL_DIR = SERVICE_DIR.parents[1] / "models" / "bert_phishing"
 
 
-def _int(name: str, default: int) -> int:
+def _int(name: str, default: int, minimo: int = 1, maximo: int | None = None) -> int:
     value = os.environ.get(name)
     if value is None or value == "":
         return default
     try:
-        return int(value)
+        number = int(value)
     except ValueError as exc:
         raise ValueError(f"La variable {name} debe ser un entero") from exc
+    if number < minimo or (maximo is not None and number > maximo):
+        rango = f">= {minimo}" if maximo is None else f"entre {minimo} y {maximo}"
+        raise ValueError(f"La variable {name} debe ser {rango}")
+    return number
 
 
 def _model_dir() -> Path:
@@ -50,7 +54,7 @@ class Settings:
         return cls(
             model_dir=_model_dir(),
             host=os.environ.get("ML_HOST", "127.0.0.1"),
-            port=_int("ML_PORT", 5000),
+            port=_int("ML_PORT", 5000, 1, 65535),
             device=device,
             torch_num_threads=_int("TORCH_NUM_THREADS", 2),
             waitress_threads=_int("WAITRESS_THREADS", 2),

@@ -30,3 +30,6 @@ yarn.lock
 
 # Cartas personales, no son parte del proyecto
 web/
+
+# Reporte regenerado en cada corrida de pytest
+backend/ml-service/reports/pruebas_unitarias.csv
