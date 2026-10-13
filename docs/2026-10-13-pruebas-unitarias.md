@@ -30,3 +30,10 @@
 - `config.py`: los enteros deben ser >= 1 (puerto 1–65535); tests U8-07/07b/07c. ml-service: 221 unit + suite completa (sin `slow`) 260 pasan.
 - Decisión: `reports/pruebas_unitarias.csv` va a `.gitignore` (se regenera en cada corrida). Revertir si se quiere versionar como evidencia de tesis.
 - Sin commits hechos; pendiente que el usuario lo pida.
+
+## Cierre (verificación final con Flask real)
+- Con el servicio Flask real arriba (BERT en CPU): e2e del gateway 27 pasan, 1 skip (benchmark `RUN_PERF`). Suite completa del ml-service incl. `slow`: 268 pasan, 7 skip.
+- No correr pytest completo mientras Flask está cargado en paralelo: una corrida simultánea crasheó (recursos); sola pasa.
+- `tsconfig.build.tsbuildinfo` dejó de versionarse y `*.tsbuildinfo` quedó en `.gitignore`.
+- Carpeta anidada duplicada `Star-Inspector-de-phishing/` (clon viejo con tests U3 antiguos) eliminada con OK del usuario.
+- El test del 413 (pendiente P1/P2 de la auditoría de la feature 001) queda cubierto por `U4-G32`.
