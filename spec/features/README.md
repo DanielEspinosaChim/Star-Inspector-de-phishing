@@ -40,3 +40,4 @@ Si falta algo, se listan los puntos faltantes y no se avanza.
 | 005 | modelo-jerarquico | Sin spec |
 | 006 | api-hilos | Sin spec |
 | 007 | despliegue-produccion | Sin spec (va después de 001) |
+| 008 | pruebas-unitarias | IMPLEMENTADA y verificada |
