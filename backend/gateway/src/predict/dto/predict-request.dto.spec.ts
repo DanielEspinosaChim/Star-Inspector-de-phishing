@@ -51,3 +51,23 @@ describe('PredictBatchRequestDto', () => {
     expect(errors(PredictBatchRequestDto, plain).length).toBeGreaterThan(0);
   });
 });
+
+// U4 (gateway) — Valores en el límite exacto
+describe('Límites de validación', () => {
+  it.each([
+    ['body de 20000', { body: 'x'.repeat(20_000) }],
+    ['subject de 1000', { body: 'ok', subject: 's'.repeat(1_000) }],
+    ['body con espacios alrededor', { body: '  hola  ' }],
+    ['unicode y emoji', { subject: '¿Ñandú?', body: 'café 🎣' }],
+  ])('U4-G03 acepta %s', (_, plain) => {
+    expect(errors(PredictRequestDto, plain)).toHaveLength(0);
+  });
+
+  it('U4-G04 en batch, el error indica el índice del email inválido', () => {
+    const [err] = errors(PredictBatchRequestDto, {
+      emails: [{ body: 'ok' }, { body: 'ok' }, { body: '' }],
+    });
+    expect(err.property).toBe('emails');
+    expect(err.children?.[0].property).toBe('2');
+  });
+});

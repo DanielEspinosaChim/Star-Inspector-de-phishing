@@ -28,6 +28,13 @@ function isApiErrorBody(value: unknown): value is ApiErrorBody {
   );
 }
 
+/** Errores de body-parser (no son HttpException): se identifican por `type`. */
+function bodyParserType(value: unknown): string | undefined {
+  if (typeof value !== 'object' || value === null) return undefined;
+  const type = (value as { type?: unknown }).type;
+  return typeof type === 'string' ? type : undefined;
+}
+
 /** Todas las respuestas de error con formato { error: { code, message } }, sin trazas. */
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -45,6 +52,23 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return;
     }
 
+    // Mensajes fijos: el de body-parser puede repetir fragmentos del cuerpo
+    const parserType = bodyParserType(exception);
+    if (parserType === 'entity.too.large') {
+      res
+        .status(HttpStatus.PAYLOAD_TOO_LARGE)
+        .json(
+          apiError('PAYLOAD_TOO_LARGE', 'El cuerpo excede el tamaño máximo'),
+        );
+      return;
+    }
+    if (parserType === 'entity.parse.failed') {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json(apiError('VALIDATION_ERROR', 'El cuerpo no es JSON válido'));
+      return;
+    }
+
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const body = exception.getResponse();
@@ -57,7 +81,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
         .json(
           apiError(
             CODES[status] ?? 'HTTP_ERROR',
-            status >= 500 ? 'Error' : exception.message,
+            status >= 500
+              ? 'Error'
+              : status === 400
+                ? 'Solicitud inválida'
+                : exception.message,
           ),
         );
       return;

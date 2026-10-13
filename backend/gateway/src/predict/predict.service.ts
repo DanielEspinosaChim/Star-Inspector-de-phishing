@@ -45,6 +45,15 @@ export class PredictService {
       body: e.body,
     }));
     const results = await this.ml.predictBatch(emails, requestId);
-    return { results, latencyMs: elapsed(start) };
+    return {
+      results: results.map((p) => ({
+        label: p.label,
+        confidence: p.confidence,
+        probabilities: p.probabilities,
+        model: p.model,
+        truncated: p.truncated,
+      })),
+      latencyMs: elapsed(start),
+    };
   }
 }

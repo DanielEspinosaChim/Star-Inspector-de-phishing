@@ -12,6 +12,7 @@ class ErrorDetailDto {
       'PAYLOAD_TOO_LARGE',
       'ML_SERVICE_UNAVAILABLE',
       'INTERNAL_ERROR',
+      'HTTP_ERROR',
     ],
   })
   code!: string;
