@@ -33,3 +33,6 @@ web/
 
 # Reporte regenerado en cada corrida de pytest
 backend/ml-service/reports/pruebas_unitarias.csv
+
+# Caché de compilación incremental de Nest
+*.tsbuildinfo
