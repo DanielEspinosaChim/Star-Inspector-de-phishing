@@ -38,6 +38,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!res.ok) {
     throw new ApiError(body?.error?.code ?? 'HTTP_ERROR', body?.error?.message ?? `Error ${res.status}`)
   }
+  if (body === null) {
+    throw new ApiError('INVALID_RESPONSE', 'El gateway devolvió una respuesta no válida')
+  }
   return body as T
 }
 
